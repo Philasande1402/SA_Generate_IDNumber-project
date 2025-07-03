@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SA ID Generator - Modern Redesign</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-id-card"></i> South African ID Generator</h1>
+            <p>Generate valid South African ID numbers using Philasande's Algorithm</p>
+        </div>
+
+        <div class="content">
+            <div class="left-panel">
+                <div class="panel">
+                    <h2 class="panel-title"><i class="fas fa-cogs"></i> Controls & Generation</h2>
+                    
+                    <div class="controls">
+                        <button class="btn" onclick="generateSingleID()">
+                            <i class="fas fa-plus-circle"></i> Generate Single ID
+                        </button>
+                        <button class="btn" onclick="generateMultipleIDs()">
+                            <i class="fas fa-layer-group"></i> Generate 10 IDs
+                        </button>
+                        <button class="btn btn-accent" onclick="clearResults()">
+                            <i class="fas fa-trash-alt"></i> Clear Results
+                        </button>
+                    </div>
+
+                    <div class="id-display" id="currentID">
+                        0000000000000
+                    </div>
+
+                    <div class="format-options">
+                        <div class="option-group">
+                            <div class="option-title">
+                                <i class="fas fa-venus-mars"></i> Gender Options
+                            </div>
+                            <div class="options">
+                                <label class="option-item">
+                                    <input type="radio" name="gender" value="random" checked>
+                                    <span>Random Gender</span>
+                                </label>
+                                <label class="option-item">
+                                    <input type="radio" name="gender" value="female">
+                                    <span>Female (0000-4999)</span>
+                                </label>
+                                <label class="option-item">
+                                    <input type="radio" name="gender" value="male">
+                                    <span>Male (5000-9999)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="option-group">
+                            <div class="option-title">
+                                <i class="fas fa-passport"></i> Citizenship
+                            </div>
+                            <div class="options">
+                                <label class="option-item">
+                                    <input type="radio" name="citizenship" value="random" checked>
+                                    <span>Random</span>
+                                </label>
+                                <label class="option-item">
+                                    <input type="radio" name="citizenship" value="citizen">
+                                    <span>SA Citizen (0)</span>
+                                </label>
+                                <label class="option-item">
+                                    <input type="radio" name="citizenship" value="resident">
+                                    <span>Permanent Resident (2)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="option-group" style="grid-column: span 2;">
+                            <div class="option-title">
+                                <i class="fas fa-calendar-alt"></i> Birth Date
+                            </div>
+                            <div class="date-input">
+                                <input type="date" id="birthDate" min="1900-01-01" max="2023-12-31">
+                                <button onclick="clearBirthDate()">
+                                    <i class="fas fa-random"></i> Random Date
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2 class="panel-title"><i class="fas fa-history"></i> Generated IDs</h2>
+                    <div class="generated-list">
+                        <div id="idList">
+                            <div class="generated-item">
+                                <span>0000000000000</span>
+                                <span class="item-meta">Click to generate IDs</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="panel">
+                    <h2 class="panel-title"><i class="fas fa-id-badge"></i> ID Breakdown</h2>
+                    <div id="idBreakdown">
+                        <div class="breakdown-section">
+                            <div class="breakdown-title">
+                                <i class="fas fa-birthday-cake"></i> Date of Birth
+                            </div>
+                            <div class="breakdown-value">YYMMDD: 000000</div>
+                            <div class="breakdown-desc">Positions 1-6: Birth date in YYMMDD format</div>
+                        </div>
+                        
+                        <div class="breakdown-section">
+                            <div class="breakdown-title">
+                                <i class="fas fa-venus-mars"></i> Gender Sequence
+                            </div>
+                            <div class="breakdown-value">0000-4999 = Female, 5000-9999 = Male</div>
+                            <div class="breakdown-desc">Positions 7-10: Gender identification number</div>
+                        </div>
+                        
+                        <div class="breakdown-section">
+                            <div class="breakdown-title">
+                                <i class="fas fa-flag"></i> Citizenship
+                            </div>
+                            <div class="breakdown-value">0 = SA Citizen, 2 = Permanent Resident</div>
+                            <div class="breakdown-desc">Position 11: Citizenship status indicator</div>
+                        </div>
+                        
+                        <div class="breakdown-section">
+                            <div class="breakdown-title">
+                                <i class="fas fa-question-circle"></i> Unused Digit
+                            </div>
+                            <div class="breakdown-value">Usually 8</div>
+                            <div class="breakdown-desc">Position 12: Currently not used</div>
+                        </div>
+                        
+                        <div class="breakdown-section">
+                            <div class="breakdown-title">
+                                <i class="fas fa-check-circle"></i> Checksum
+                            </div>
+                            <div class="breakdown-value">Calculated using Luhn's algorithm</div>
+                            <div class="breakdown-desc">Position 13: Validation digit</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2 class="panel-title"><i class="fas fa-clipboard-check"></i> Validation Steps</h2>
+                    <div id="validationSteps">
+                        <div class="validation-steps">
+                            <div class="step">
+                                <div class="step-title">
+                                    <i class="fas fa-calculator"></i> Step 1: Original ID
+                                </div>
+                                <div class="digit-row">
+                                    0 0 0 0 0 0 0 0 0 0 0 0 0
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-title">
+                                    <i class="fas fa-sync-alt"></i> Step 2: Process digits
+                                </div>
+                                <div class="digit-row">
+                                    <span>0</span> <span class="highlight">0×2=0</span> <span>0</span> 
+                                    <span class="highlight">0×2=0</span> <span>0</span> <span class="highlight">0×2=0</span> 
+                                    <span>0</span> <span class="highlight">0×2=0</span> <span>0</span> 
+                                    <span class="highlight">0×2=0</span> <span>0</span> <span class="highlight">0×2=0</span> 
+                                    <span>0</span>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-title">
+                                    <i class="fas fa-plus-circle"></i> Step 3: Calculate sum
+                                </div>
+                                <div class="digit-row">
+                                    Sum = 0+0+0+0+0+0+0+0+0+0+0+0+0 = 0
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-title">
+                                    <i class="fas fa-check-double"></i> Step 4: Validate
+                                </div>
+                                <div class="digit-row">
+                                    0 % 10 = 0 → <span class="valid">VALID ID</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>South African ID Generator | Using Luhn's Algorithm for Validation | Modern Redesign</p>
+            <p>© 2023 ID Generator Tool | For educational purposes only</p>
+        </div>
+    </div>
+
+    <script src="action.js">
+    </script>
+</body>
+</html>
