@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- MOBILE META TAGS ADDED -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#2c3e50">
+    <meta name="format-detection" content="telephone=no">
+    
     <title>SA ID Generator - Modern Redesign</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -204,7 +210,77 @@
         </div>
     </div>
 
-    <script src="action.js">
+    <script src="action.js"></script>
+    
+    <!-- MOBILE-SPECIFIC JAVASCRIPT ADDED -->
+    <script>
+        // Mobile touch improvements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Make buttons more touch-friendly
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => {
+                btn.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.95)';
+                    this.style.opacity = '0.9';
+                });
+                btn.addEventListener('touchend', function() {
+                    this.style.transform = '';
+                    this.style.opacity = '';
+                });
+            });
+            
+            // Make ID display copyable on mobile
+            const idDisplay = document.getElementById('currentID');
+            if (idDisplay) {
+                idDisplay.addEventListener('click', function() {
+                    const text = this.textContent;
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(text).then(() => {
+                            const original = this.textContent;
+                            this.textContent = 'Copied!';
+                            setTimeout(() => {
+                                this.textContent = original;
+                            }, 1000);
+                        });
+                    }
+                });
+            }
+            
+            // Better date input for mobile
+            const dateInput = document.getElementById('birthDate');
+            if (dateInput) {
+                // Set reasonable date limits
+                const today = new Date();
+                const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+                const minDate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate());
+                
+                dateInput.max = maxDate.toISOString().split('T')[0];
+                dateInput.min = minDate.toISOString().split('T')[0];
+                
+                // Set default to 30 years ago
+                const defaultDate = new Date(today.getFullYear() - 30, today.getMonth(), today.getDate());
+                dateInput.value = defaultDate.toISOString().split('T')[0];
+            }
+            
+            // Prevent zoom on double-tap
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', function(e) {
+                const now = Date.now();
+                if (now - lastTouchEnd <= 300) {
+                    e.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, false);
+            
+            // Handle orientation changes
+            window.addEventListener('orientationchange', function() {
+                setTimeout(() => {
+                    if (typeof generateSingleID === 'function') {
+                        generateSingleID();
+                    }
+                }, 300);
+            });
+        });
     </script>
 </body>
 </html>
